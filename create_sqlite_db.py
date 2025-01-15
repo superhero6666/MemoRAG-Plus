@@ -245,7 +245,7 @@ def create_index():
 def init_admin_account():
     # Initialize admin account with predefined credentials
     account_name = 'admin'
-    password = 'open_kf_AIGC@2024'
+    password = 'hkl159135.'
     password_hash = generate_password_hash(password, method='pbkdf2:sha256', salt_length=10)
 
     conn = None
