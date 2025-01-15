@@ -9,7 +9,8 @@ class LLMGenerator:
         self.llm_name = os.getenv('LLM_NAME')
         if self.llm_name == 'OpenAI':
             api_key = os.getenv('OPENAI_API_KEY')
-            self.client = OpenAI(api_key=api_key)
+            base_url = os.getenv('GPT_BASE_URL')
+            self.client = OpenAI(api_key=api_key,base_url=base_url)
             self.model_name = os.getenv('GPT_MODEL_NAME')
         elif self.llm_name == 'ZhipuAI':
             api_key = os.getenv('ZHIPUAI_API_KEY')
