@@ -21,7 +21,7 @@ def login():
     if not account_name or not password:
         return {
             'retcode': -20000,
-            'message': 'Account name and password are required',
+            'message': '账号和密码都需要正确填写！！',
             'data': {}
         }
 
@@ -39,7 +39,7 @@ def login():
         if account and check_password_hash(account['password_hash'], password):
             # Generate token with account_name in the payload
             token = TokenHelper.generate_token(account_name)
-            logger.info(f"Generate token: '{token}'")
+            logger.info(f"生成token: '{token}'")
 
             # Set is_login to 1 and update mtime to the current Unix timestamp
             try:
@@ -52,16 +52,16 @@ def login():
                         ))
                     conn.commit()
             except Exception as e:
-                logger.error(f"Process discache_lock exception: {e}")
+                logger.error(f"进程获取锁异常: {e}")
                 return {
                     'retcode': -30000,
-                    'message': f'An error occurred: {e}',
+                    'message': f'发生错误: {e}',
                     'data': {}
                 }
 
             return {
                 'retcode': 0,
-                'message': 'Login successful',
+                'message': '登录成功！',
                 'data': {
                     'token': token
                 }
@@ -69,13 +69,13 @@ def login():
         else:
             return {
                 'retcode': -20001,
-                'message': 'Invalid credentials',
+                'message': '无效的账号',
                 'data': {}
             }
     except Exception as e:
         return {
             'retcode': -30000,
-            'message': f'An error occurred during login, exception: {e}',
+            'message': f'登陆的时候发生错误，信息如下: {e}',
             'data': {}
         }
     finally:
@@ -95,7 +95,7 @@ def update_password():
         return {
             'retcode': -20000,
             'message':
-            'Account name, current password, and new password are required',
+            '账号名称，当前密码以及新密码都需要填写',
             'data': {}
         }
 
