@@ -1,5 +1,6 @@
 import os
 from openai import OpenAI
+from server.logger.logger_config import my_logger as logger
 
 
 class Memory:
@@ -28,6 +29,9 @@ class Memory:
 
         self.generate(prompt, assistant_prompt, False
                       , False)
+        logger.info(
+            f"==========\nThe model memorize the context successfully!!\n=========="
+        )
 
     # 模型回忆
     def recall(self,
@@ -41,7 +45,7 @@ class Memory:
         2. The clues are in the form of text spans that will assist in answering the question.
         3. Only output the clues. If there are multiple clues, separate them with a newline.""".format(question=query)
 
-        return self.generate(prompt, "", False, False)[0]
+        return self.generate(prompt, "", False, False, False)[0]
 
     # 模型生成
     def generate(self,
