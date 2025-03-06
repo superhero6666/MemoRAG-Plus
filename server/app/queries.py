@@ -292,6 +292,9 @@ Assistant: I'm here to assist you with information related to `{bot_topic}`. If 
 
     # 回忆线索
     memory_query = memory.recall(query)
+    logger.info(
+        f"memorized information : {memory_query}\n"
+    )
     memory_query_array = memory_query.splitlines()
 
     if USE_RERANKING:
