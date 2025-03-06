@@ -1,5 +1,7 @@
 import os
 from openai import OpenAI
+from zhipuai import ZhipuAI
+
 from server.logger.logger_config import my_logger as logger
 
 
@@ -7,10 +9,8 @@ class Memory:
 
     # 记忆模型初始化
     def __init__(self) -> None:
-        self.llm_name = os.getenv('MEMO_LLM_NAME')
         api_key = os.getenv('MEMO_API_KEY')
-        base_url = os.getenv('MEMO_BASE_URL')
-        self.client = OpenAI(base_url=base_url, api_key=api_key)
+        self.client = ZhipuAI(api_key=api_key)
         self.model_name = os.getenv('MEMO_GLM_MODEL_NAME')
 
     # 模型记忆

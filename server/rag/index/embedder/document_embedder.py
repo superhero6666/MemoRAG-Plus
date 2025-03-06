@@ -25,7 +25,7 @@ class DocumentEmbedder:
                 model=OPENAI_EMBEDDING_MODEL_NAME)
         elif self.llm_name == 'ZhipuAI':
             embeddings = ZhipuAIEmbeddings(
-                api_key=os.getenv('ZHIPUAI_API_KEY'),
+                api_key=os.getenv('ZHIPUAI_EMBEDDING_API_KEY'),
                 model=ZHIPUAI_EMBEDDING_MODEL_NAME)
         elif self.llm_name == 'Ollama':
             base_url = os.getenv('OLLAMA_BASE_URL')
@@ -34,7 +34,7 @@ class DocumentEmbedder:
         elif self.llm_name in ['DeepSeek', 'Moonshot']:
             # DeepSeek and Moonshot use ZhipuAI's Embedding API
             embeddings = ZhipuAIEmbeddings(
-                api_key=os.getenv('ZHIPUAI_API_KEY'),
+                api_key=os.getenv('ZHIPUAI_EMBEDDING_API_KEY'),
                 model=ZHIPUAI_EMBEDDING_MODEL_NAME)
         else:
             raise ValueError(

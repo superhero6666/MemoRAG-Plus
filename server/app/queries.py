@@ -30,6 +30,7 @@ BOT_TOPIC = os.getenv('BOT_TOPIC')
 USE_PREPROCESS_QUERY = int(os.getenv('USE_PREPROCESS_QUERY'))
 USE_RERANKING = int(os.getenv('USE_RERANKING'))
 USE_DEBUG = int(os.getenv('USE_DEBUG'))
+USE_RETRIEVAL = int(os.getenv('USE_RETRIEVAL'))
 
 queries_bp = Blueprint('queries', __name__, url_prefix='/open_kf_api/queries')
 
@@ -268,6 +269,11 @@ def get_recall_documents(
 
 
 def generate_answer(query: str, user_id: str, is_streaming: bool = False):
+
+    if USE_RETRIEVAL == 0:
+        prompt = f"""Answer the following query using your own knowledge: '{query}'"""
+        response = llm_generator.generate(prompt, is_streaming, False)
+        return response
     bot_topic = BOT_TOPIC
 
     # Detect the language of the query
@@ -516,6 +522,7 @@ def smart_query_stream():
         user_id = request.user_id
         query = request.query
         intervene_data = request.intervene_data
+
         if intervene_data:
             save_user_query_history(user_id, query, intervene_data, True)
 
@@ -553,7 +560,6 @@ def smart_query_stream():
                 f"query: '{query}' and user_id: '{user_id}' is processed successfully, the answer is:\n{answer}\nthe total timecost is {timecost}\n"
             )
             save_user_query_history(user_id, query, answer, True)
-
         return Response(generate_llm(),
                         mimetype="text/event-stream",
                         headers=headers)
