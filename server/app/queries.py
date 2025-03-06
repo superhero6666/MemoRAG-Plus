@@ -188,8 +188,23 @@ def filter_documents(
 
 
 def get_recall_documents(
-        current_query, refined_query, k, user_id,
+        current_query, refined_query, memory_query_array, k, user_id,
         min_relevance_score: float) -> List[Tuple[Document, float]]:
+
+    memo_ret = []
+    for memory_query in memory_query_array:
+        ret = search_documents(memory_query, k)
+        results = filter_documents(ret, min_relevance_score)
+        if USE_DEBUG:
+            results_info = "\n********************\n".join([
+                f"URL: {doc.metadata['source']}\nscore: {score}\npage_content: {doc.page_content}"
+                for doc, score in results
+            ])
+            logger.info(
+                f"==========\nFor the current_query: '{current_query}', '{user_id}', the recall results is\n{results_info}\n=========="
+            )
+        memo_ret += ret
+
     if current_query == refined_query:
         ret = search_documents(current_query, k)
         results = filter_documents(ret, min_relevance_score)
@@ -201,8 +216,18 @@ def get_recall_documents(
             logger.info(
                 f"==========\nFor the current_query: '{current_query}', '{user_id}', the recall results is\n{results_info}\n=========="
             )
+        final_results = []
+        results += memo_ret
+        source_id_set = set()
+        for doc, chroma_score in results:
+            source_id = doc.metadata["id"]
+            if source_id not in source_id_set:
+                source_id_set.add(source_id)
+                final_results.append((doc, chroma_score))
+            else:
+                logger.warning(f"source_id: '{source_id}' is already existed!")
 
-        return results
+        return final_results
 
     with ThreadPoolExecutor() as executor:
         future_ret1 = executor.submit(search_documents, current_query, k)
@@ -228,7 +253,7 @@ def get_recall_documents(
                 f"==========\nFor the refined_query: '{refined_query}', '{user_id}', the recall results is\n{results_info2}\n=========="
             )
 
-        ret = ret1 + ret2
+        ret = ret1 + ret2 + memo_ret
         results = []
         source_id_set = set()
         for doc, chroma_score in ret:
@@ -268,14 +293,13 @@ Assistant: I'm here to assist you with information related to `{bot_topic}`. If 
     # 回忆线索
     memory_query = memory.recall(query)
     memory_query_array = memory_query.splitlines()
-    adjust_query.
 
     if USE_RERANKING:
         top_k = RERANK_RECALL_TOP_K
     else:
         top_k = RECALL_TOP_K
 
-    results = get_recall_documents(query, adjust_query, top_k, user_id,
+    results = get_recall_documents(query, adjust_query, memory_query_array, top_k, user_id,
                                    MIN_RELEVANCE_SCORE)
 
     filter_context = ''
