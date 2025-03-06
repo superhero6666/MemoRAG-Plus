@@ -21,6 +21,8 @@ from server.rag.pre_retrieval.query_transformation.rewrite import detect_query_l
 from server.rag.post_retrieval.rerank.flash_ranker import RerankRequest, reranker
 from server.rag.retrieval.vector_search import vector_search
 
+from server.rag.memory.memory import memory
+
 LLM_NAME = os.getenv('LLM_NAME')
 
 MIN_RELEVANCE_SCORE = float(os.getenv('MIN_RELEVANCE_SCORE', '0.3'))
@@ -262,6 +264,11 @@ Assistant: I'm here to assist you with information related to `{bot_topic}`. If 
         adjust_query = refine_query(query, history_context, lang)
     else:
         adjust_query = query
+
+    # 回忆线索
+    memory_query = memory.recall(query)
+    memory_query_array = memory_query.splitlines()
+    adjust_query.
 
     if USE_RERANKING:
         top_k = RERANK_RECALL_TOP_K

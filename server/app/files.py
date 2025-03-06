@@ -30,6 +30,8 @@ from server.rag.index.parser.file_loader.txt_loader import AsyncTxtLoader
 from server.rag.index.parser.file_loader.xlsx_loader import AsyncXlsxLoader
 from server.rag.index.parser.file_parser.markdown_parser import AsyncTextParser
 
+from server.rag.memory.memory import memory
+
 URL_PREFIX = os.getenv('URL_PREFIX')
 
 files_bp = Blueprint('files', __name__, url_prefix='/open_kf_api/files')
@@ -235,7 +237,11 @@ def submit_local_file_list():
                 'file_url': file_url,
                 'file_size': file_size
             })
-
+            # 记忆模型开始记忆全文
+            memory.memorize(file_content)
+            logger.info(
+                f"[MEMORY OVER] Model memorize the context over: {file_.filename}"
+            )
         conn = get_db_connection()
         cur = conn.cursor()
         placeholders = ', '.join(['?'] * len(md5_set))
