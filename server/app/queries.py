@@ -271,7 +271,7 @@ def get_recall_documents(
 def generate_answer(query: str, user_id: str, is_streaming: bool = False):
 
     if USE_RETRIEVAL == 0:
-        prompt = f"""Answer the following query using your own knowledge: '{query}'"""
+        prompt = f"""Answer the following query using your own knowledge using Chinese: '{query}'"""
         response = llm_generator.generate(prompt, is_streaming, False)
         return response
     bot_topic = BOT_TOPIC
